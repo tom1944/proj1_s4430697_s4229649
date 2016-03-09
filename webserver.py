@@ -1,4 +1,5 @@
 import argparse
+
 import webhttp.server
 
 # Create and start the HTTP Server
@@ -17,7 +18,7 @@ if __name__ == '__main__':
         server.run()
     except KeyboardInterrupt:
         server.shutdown()
-        print ("")
+        print ("hoi")
             
 
 
