@@ -12,7 +12,7 @@ class ConnectionHandler(threading.Thread):
 
     def __init__(self, conn_socket, addr, timeout):
         """Initialize the HTTP Connection Handler
-        
+
         Args:
             conn_socket (socket): socket used for connection with client
             addr (str): ip address of client
@@ -23,22 +23,22 @@ class ConnectionHandler(threading.Thread):
         self.conn_socket = conn_socket
         self.addr = addr
         self.timeout = timeout
-    
+
     def handle_connection(self):
         """Handle a new connection"""
         pass
-        
+
     def run(self):
         """Run the thread of the connection handler"""
         self.handle_connection()
-        
+
 
 class Server:
     """HTTP Server"""
 
     def __init__(self, hostname, server_port, timeout):
         """Initialize the HTTP server
-        
+
         Args:
             hostname (str): hostname of the server
             server_port (int): port that the server is listening on
@@ -48,12 +48,16 @@ class Server:
         self.server_port = server_port
         self.timeout = timeout
         self.done = False
-    
+
     def run(self):
         """Run the HTTP Server and start listening"""
+        server_socket = socket.socket()
+        server_socket.bind((self.hostname, self.server_port))
+        server_socket.listen(5)
         while not self.done:
-            pass
-    
+            (client_socket, address) = server_socket.accept()
+            print(client_socket)
+
     def shutdown(self):
         """Safely shut down the HTTP server"""
         self.done = True
