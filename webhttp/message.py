@@ -6,7 +6,7 @@ This modules contains classes for representing HTTP responses and requests.
 reasondict = {
     # Dictionary for code reasons
     # Format: code : "Reason"
-    500 : "Internal Server Error"
+    500: "Internal Server Error"
 }
 
 
