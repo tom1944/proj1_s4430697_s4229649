@@ -56,7 +56,9 @@ class Server:
         server_socket.listen(5)
         while not self.done:
             (client_socket, address) = server_socket.accept()
-            print(client_socket)
+            print(address)
+            connection = ConnectionHandler(client_socket, address, self.timeout)
+            connection.run()
 
     def shutdown(self):
         """Safely shut down the HTTP server"""
