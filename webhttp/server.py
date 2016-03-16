@@ -3,8 +3,8 @@
 This module contains a HTTP server
 """
 
-import threading
 import socket
+import threading
 
 
 class ConnectionHandler(threading.Thread):
@@ -26,7 +26,12 @@ class ConnectionHandler(threading.Thread):
 
     def handle_connection(self):
         """Handle a new connection"""
-        pass
+        raw_http_requests = self.conn_socket.recv(20)
+        http_requests = parse_request(raw_http_requests)
+
+        print(http_request)
+
+        self.conn_socket.close()
 
     def run(self):
         """Run the thread of the connection handler"""
