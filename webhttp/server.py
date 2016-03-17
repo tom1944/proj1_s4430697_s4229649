@@ -5,7 +5,7 @@ This module contains a HTTP server
 
 import socket
 import threading
-from webhttp import parser
+from webhttp import parser, composer
 
 
 class ConnectionHandler(threading.Thread):
@@ -28,9 +28,14 @@ class ConnectionHandler(threading.Thread):
     def handle_connection(self):
         """Handle a new connection"""
         raw_http_requests = self.conn_socket.recv(1024)
-        # http_requests = parser.parse_requests(raw_http_requests)
+        http_requests = parser.parse_requests(raw_http_requests)
 
         print('message:', raw_http_requests)
+
+        for http_request in http_requests:
+            comp = composer.ResponseComposer(self.timeout)
+            response = comp.compose_response(http_request)
+            # verzend response
 
         self.conn_socket.close()
 

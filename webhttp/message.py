@@ -18,6 +18,7 @@ class Message(object):
         self.version = "HTTP/1.1"
         self.startline = ""
         self.body = ""
+        self.type = None
         self.headerdict = dict()
         
     def set_header(self, name, value):

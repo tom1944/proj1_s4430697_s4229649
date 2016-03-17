@@ -6,8 +6,7 @@ HTTP requests from a client.
 
 import time
 
-import webhttp.message
-import webhttp.resource
+from webhttp import message, resource
 
 
 class ResponseComposer:
@@ -31,13 +30,11 @@ class ResponseComposer:
             webhttp.Response: response to request
 
         """
-        response = webhttp.message.Response()
+        if request.type == 'GET':
+            return self.compose_get_response()
 
-        # Stub code
-        response.code = 200
-        response.set_header("Content-Length", 4)
-        response.set_header("Connection", "close")
-        response.body = "Test"
+    def compose_get_response(self):
+        response = message.Response()
 
         return response
 

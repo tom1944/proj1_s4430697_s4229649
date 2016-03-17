@@ -3,7 +3,7 @@
 This module contains parses for HTTP response and HTTP requests.
 """
 
-from webhttp.message import Request, Response
+from webhttp import message
 
 
 class MessageFormatError(Exception):
@@ -25,7 +25,7 @@ def parse_requests(buff):
 
     http_requests = []
     for request in requests:
-        http_request = Request()
+        http_request = message.Request()
 
         try:
             header, body = request.split('\r\n\r\n', 1)
@@ -35,6 +35,7 @@ def parse_requests(buff):
 
         lines = [x for x in header.split('\r\n') if x is not '']
         http_request.startline = lines.pop(0)
+        http_request.type = _get_type(http_request.startline)
 
         for line in lines:
             try:
@@ -45,6 +46,24 @@ def parse_requests(buff):
         http_requests.append(http_request)
     return http_requests
 
+
+def _get_type(startline):
+    if startline[:3] == 'GET':
+        return 'GET'
+    elif startline[:4] == ' HEAD':
+        return 'HEAD'
+    elif startline[:4] == 'POST':
+        return 'POST'
+    elif startline[:3] == 'PUT':
+        return 'PUT'
+    elif startline[:6] == 'DELETE':
+        return 'DELETE'
+    elif startline[:5] == 'TRACE':
+        return 'TRACE'
+    elif startline[:7] == 'CONNECT':
+        return 'CONNECT'
+    else:
+        raise MessageFormatError('type unknown')
 
 def split_requests(buff):
     """Split multiple requests
@@ -71,5 +90,5 @@ def parse_response(buff):
     Returns:
         webhttp.Response
     """
-    response = Response()
+    response = message.Response()
     return response
