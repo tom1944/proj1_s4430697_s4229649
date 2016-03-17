@@ -3,7 +3,12 @@
 This module contains parses for HTTP response and HTTP requests.
 """
 
-import webhttp.message
+from webhttp.message import Request, Response
+
+
+class MessageFormatError(Exception):
+    """Exception which is raised when message format is wrong"""
+    pass
 
 
 def parse_requests(buff):
@@ -13,16 +18,31 @@ def parse_requests(buff):
         buff (str): the buffer contents received from socket
 
     Returns:
-        list of webhttp.Request
+        list of webhttp.message.Request
     """
-    requests = split_requests(buff)
+    # requests = split_requests(buff)
+    requests = [buff]
 
     http_requests = []
     for request in requests:
-        http_request = webhttp.message.Request()
-        parse_request(request)
-        http_requests.append(http_request)
+        http_request = Request()
 
+        try:
+            header, body = request.split('\r\n\r\n', 1)
+            http_request.body = body
+        except ValueError:
+            raise MessageFormatError
+
+        lines = [x for x in header.split('\r\n') if x is not '']
+        http_request.startline = lines.pop(0)
+
+        for line in lines:
+            try:
+                name, value = line.split(':', 1)
+                http_request.set_header(name.strip(), value.strip())
+            except ValueError:
+                raise MessageFormatError
+        http_requests.append(http_request)
     return http_requests
 
 
@@ -51,5 +71,5 @@ def parse_response(buff):
     Returns:
         webhttp.Response
     """
-    response = webhttp.message.Response()
+    response = Response()
     return response
