@@ -42,7 +42,19 @@ class Message(object):
             return self.headerdict[name]
         else:
             return ""
-        
+
+    def set_body(self, body):
+        self.body = body
+
+    def get_body(self):
+        return self.body
+
+    def set_version(self, version):
+        self.version = version
+
+    def get_version(self):
+        return self.version
+
     def __str__(self):
         """Convert the Message to a string
         
@@ -56,7 +68,7 @@ class Message(object):
 class Request(Message):
     """Class that stores a HTTP request"""
 
-    def __init__(self):
+    def __init__(self, ):
         """Initialize the Request"""
         super(Request, self).__init__()
         self.method = ""
@@ -68,9 +80,20 @@ class Request(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = ""
-        return super(Request, self).__str__()
-        
+        startline = [ self.method, self.uri, self.version].join(" ") + "\r\n"
+        return ""
+
+    def set_method(self, method):
+        self.method = method
+
+    def get_method(self):
+        return self.method
+
+    def set_request_uri(self, uri):
+        self.uri = uri
+
+    def get_request_uri(self):
+        return self.uri
 
 class Response(Message):
     """Class that stores a HTTP Response"""
@@ -88,3 +111,9 @@ class Response(Message):
         """
         self.startline = ""                                      
         return super(Response, self).__str__()
+
+    def set_status_code(self, code):
+        self.code = code
+
+    def get_status_code(self):
+        return self.code
