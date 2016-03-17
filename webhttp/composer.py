@@ -35,7 +35,7 @@ class ResponseComposer:
 
     def compose_get_response(self):
         response = message.Response()
-
+        response.startline = 'HTTP/1.1 200 OK'
         return response
 
     def make_date_string(self):

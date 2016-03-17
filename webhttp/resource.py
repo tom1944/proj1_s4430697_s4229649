@@ -57,7 +57,10 @@ class Resource:
         Returns:
             str: Contents of the resource
         """
-        return open(self.path).read()
+        with open(self.path) as content_file:
+            content = content_file.read()
+            content_file.close()
+        return content
 
     def get_content_type(self):
         """Get the content type, i.e "text/html"

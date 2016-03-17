@@ -35,7 +35,7 @@ class ConnectionHandler(threading.Thread):
         for http_request in http_requests:
             comp = composer.ResponseComposer(self.timeout)
             response = comp.compose_response(http_request)
-            # verzend response
+            self.conn_socket.send(str(response))
 
         self.conn_socket.close()
 

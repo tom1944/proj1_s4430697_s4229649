@@ -88,7 +88,7 @@ def parse_response(buff):
         buff (str): the buffer contents received from socket
 
     Returns:
-        webhttp.Response
+        webhttp.message.Response
     """
     response = message.Response()
     return response
