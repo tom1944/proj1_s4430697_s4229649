@@ -2,8 +2,7 @@ import unittest
 import socket
 import sys
 
-import webhttp.message
-import webhttp.parser
+from webhttp import message, parser
 
 
 portnr = 8001
@@ -16,7 +15,6 @@ class TestGetRequests(unittest.TestCase):
         """Prepare for testing"""
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(("localhost", portnr))
-        self.parser = webhttp.parser.ResponseParser()
 
     def tearDown(self):
         """Clean up after testing"""
@@ -26,7 +24,7 @@ class TestGetRequests(unittest.TestCase):
     def test_existing_file(self):
         """GET for a single resource that exists"""
         # Send the request
-        request = webhttp.message.Request()
+        request = message.Request()
         request.method = "GET"
         request.uri = "/test/index.html"
         request.set_header("Host", "localhost:{}".format(portnr))
@@ -34,8 +32,8 @@ class TestGetRequests(unittest.TestCase):
         self.client_socket.send(str(request))
 
         # Test response
-        message = self.client_socket.recv(1024)
-        response = self.parser.parse_response(message)
+        msg = self.client_socket.recv(1024)
+        response = parser.parse_response(msg)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.body)
 
@@ -80,12 +78,12 @@ class TestGetRequests(unittest.TestCase):
 if __name__ == "__main__":
     # Parse command line arguments
     import argparse
-    parser = argparse.ArgumentParser(description="HTTP Tests")
-    parser.add_argument("-p", "--port", type=int, default=8001)
+    psr = argparse.ArgumentParser(description="HTTP Tests")
+    psr.add_argument("-p", "--port", type=int, default=8001)
     
     # Arguments for the unittest framework
-    parser.add_argument('unittest_args', nargs='*')
-    args = parser.parse_args()
+    psr.add_argument('unittest_args', nargs='*')
+    args = psr.parse_args()
     
     # Only pass the unittest arguments to unittest
     sys.argv[1:] = args.unittest_args

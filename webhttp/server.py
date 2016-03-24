@@ -4,12 +4,12 @@ This module contains a HTTP server
 """
 
 import socket
-import threading
+from threading import Thread, Timer
 
 from webhttp import parser, composer
 
 
-class ConnectionHandler(threading.Thread):
+class ConnectionHandler(Thread):
     """Connection Handler for HTTP Server"""
 
     def __init__(self, conn_socket, addr, timeout):
@@ -25,6 +25,8 @@ class ConnectionHandler(threading.Thread):
         self.conn_socket = conn_socket
         self.addr = addr
         self.timeout = timeout
+        self.timer = Timer(timeout, self.close())
+        self.timer.start()
 
     def handle_connection(self):
         """Handle a new connection"""
@@ -37,11 +39,15 @@ class ConnectionHandler(threading.Thread):
             response,keep_alive = comp.compose_response(http_request)
             self.conn_socket.send(str(response))
 
-        self.conn_socket.close()
+        self.close()
 
     def run(self):
         """Run the thread of the connection handler"""
         self.handle_connection()
+
+    def close(self):
+        self.timer.cancel()
+        self.conn_socket.close()
 
 
 class Server:
