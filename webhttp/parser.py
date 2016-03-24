@@ -34,8 +34,12 @@ def parse_requests(buff):
             raise MessageFormatError
 
         lines = [x for x in header.split('\r\n') if x is not '']
-        http_request.startline = lines.pop(0)
-        http_request.type = _get_type(http_request.startline)
+        startline = lines.pop(0)
+        http_request.startline = startline
+        try:
+            http_request.method, http_request.uri, http_request.version = startline.split()
+        except ValueError:
+            raise MessageFormatError
 
         for line in lines:
             try:
@@ -46,24 +50,6 @@ def parse_requests(buff):
         http_requests.append(http_request)
     return http_requests
 
-
-def _get_type(startline):
-    if startline[:3] == 'GET':
-        return 'GET'
-    elif startline[:4] == ' HEAD':
-        return 'HEAD'
-    elif startline[:4] == 'POST':
-        return 'POST'
-    elif startline[:3] == 'PUT':
-        return 'PUT'
-    elif startline[:6] == 'DELETE':
-        return 'DELETE'
-    elif startline[:5] == 'TRACE':
-        return 'TRACE'
-    elif startline[:7] == 'CONNECT':
-        return 'CONNECT'
-    else:
-        raise MessageFormatError('type unknown')
 
 def split_requests(buff):
     """Split multiple requests

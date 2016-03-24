@@ -19,7 +19,6 @@ class Message(object):
         self.version = "HTTP/1.1"
         self.startline = ""
         self.body = ""
-        self.type = None
         self.headerdict = dict()
         
     def set_header(self, name, value):
@@ -62,12 +61,12 @@ class Request(Message):
             str: representation the can be sent over socket
         """
         string = ''
-        startline = " ".join([self.method, self.uri, self.version]) + "\r\n"
+        startline = self.startline + '\r\n'  # " ".join([self.method, self.uri, self.version]) + "\r\n"
         string += startline
         for header in self.headerdict:
             headerline = header + ': ' + self.headerdict[header] + '\r\n'
             string += headerline
-        string += '\n\r' + self.body
+        string += '\r\n' + self.body
         return string
 
 
@@ -78,7 +77,7 @@ class Response(Message):
         """Initialize the Response"""
         super(Response, self).__init__()
         self.code = 500  # the status code
-        self.phrase = "" # the reason phrase
+        self.phrase = ""  # the reason phrase
     
     def __str__(self):
         """Convert the Response to a string
@@ -86,6 +85,6 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = " ".join([self.version, self.code, self.phrase]) + "\r\n"
-        headers = "\r\n".join([header + ":" + self.get_header(header) for header in self.headerdict])
+        self.startline = " ".join([self.version, str(self.code), self.phrase]) + "\r\n"
+        headers = "\r\n".join([header + ": " + self.get_header(header) for header in self.headerdict])
         return self.startline + headers + "\r\n" + self.body
