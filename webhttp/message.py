@@ -7,6 +7,7 @@ reasondict = {
     # Dictionary for code reasons
     # Format: code : "Reason"
     200: "OK",
+    404: 'Not Found',
     500: "Internal Server Error"
 }
 

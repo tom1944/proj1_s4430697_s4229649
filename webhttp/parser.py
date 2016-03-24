@@ -20,9 +20,8 @@ def parse_requests(buff):
     Returns:
         list of webhttp.message.Request
     """
-    # requests = split_requests(buff)
-    requests = [buff]
-
+    requests = split_requests(buff)
+    # requests = [buff]
     http_requests = []
     for request in requests:
         http_request = message.Request()
