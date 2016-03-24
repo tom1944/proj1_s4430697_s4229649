@@ -30,9 +30,8 @@ class ConnectionHandler(threading.Thread):
         raw_http_requests = self.conn_socket.recv(1024)
         http_requests = parser.parse_requests(raw_http_requests)
 
-        print(http_requests[0])
-
         for http_request in http_requests:
+            print(http_request)
             comp = composer.ResponseComposer(self.timeout)
             response = comp.compose_response(http_request)
             self.conn_socket.send(str(response))
@@ -67,7 +66,6 @@ class Server:
         server_socket.listen(5)
         while not self.done:
             (client_socket, address) = server_socket.accept()
-            print(address)
             connection = ConnectionHandler(client_socket, address, self.timeout)
             connection.run()
 
