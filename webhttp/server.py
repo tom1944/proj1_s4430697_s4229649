@@ -21,12 +21,12 @@ class ConnectionHandler(Thread):
             timeout (int): seconds until timeout
         """
         super(ConnectionHandler, self).__init__()
+        self.done = False
         self.daemon = True
         self.conn_socket = conn_socket
         self.addr = addr
         self.timeout = timeout
-        self.timer = Timer(timeout, self.close())
-        self.timer.start()
+        self.timer = None
 
     def handle_connection(self):
         """Handle a new connection"""
@@ -36,16 +36,26 @@ class ConnectionHandler(Thread):
         for http_request in http_requests:
             print(http_request)
             comp = composer.ResponseComposer(self.timeout)
-            response,keep_alive = comp.compose_response(http_request)
+            response = comp.compose_response(http_request)
             self.conn_socket.send(str(response))
-
-        self.close()
+            if response.headerdict['Connection'] == 'close':
+                self.close()
+        self.reset_timer()
 
     def run(self):
         """Run the thread of the connection handler"""
-        self.handle_connection()
+        self.timer = Timer(self.timeout, self.close())
+        self.timer.start()
+        while not self.done:
+            self.handle_connection()
+
+    def reset_timer(self):
+        self.timer.cancel()
+        self.timer = Timer(self.timeout, self.close())
+        self.timer.start()
 
     def close(self):
+        self.done = True
         self.timer.cancel()
         self.conn_socket.close()
 
