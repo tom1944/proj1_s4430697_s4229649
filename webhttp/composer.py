@@ -47,13 +47,12 @@ class ResponseComposer:
             response.code = 200
             resource_file = resource.Resource(request.uri)
             response.body = resource_file.get_content()
-            return response
         except FileExistError:
             response.code = 404
-            return response
         except FileAccessError:
             response.code = 200
-            return response
+
+        return response
 
     def make_date_string(self):
         """Make string of date and time

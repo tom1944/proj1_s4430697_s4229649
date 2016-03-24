@@ -22,6 +22,7 @@ def parse_requests(buff):
     """
     requests = split_requests(buff)
     # requests = [buff]
+
     http_requests = []
     for request in requests:
         http_request = message.Request()
