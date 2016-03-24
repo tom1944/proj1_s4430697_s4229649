@@ -1,0 +1,39 @@
+== Generic HTTP message ==
+       HTTP-message   = Request | Response     ; HTTP/1.1 messages
+
+        generic-message = start-line
+                          *(message-header CRLF)
+                          CRLF
+                          [ message-body ]
+        start-line      = Request-Line | Status-Line
+
+
+       message-header = field-name ":" [ field-value ]
+       field-name     = token
+       field-value    = *( field-content | LWS )
+       field-content  = <the OCTETs making up the field-value
+                        and consisting of either *TEXT or combinations
+                        of token, separators, and quoted-string>
+
+
+== HTTP request ==
+        Request       = Request-Line              ; Section 5.1
+                        *(( general-header        ; Section 4.5
+                         | request-header         ; Section 5.3
+                         | entity-header ) CRLF)  ; Section 7.1
+                        CRLF
+                        [ message-body ]          ; Section 4.3
+
+        Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
+
+
+== HTTP response ==
+       Response      = Status-Line               ; Section 6.1
+                       *(( general-header        ; Section 4.5
+                        | response-header        ; Section 6.2
+                        | entity-header ) CRLF)  ; Section 7.1
+                       CRLF
+                       [ message-body ]          ; Section 7.2
+
+       Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+

@@ -6,6 +6,7 @@ This modules contains classes for representing HTTP responses and requests.
 reasondict = {
     # Dictionary for code reasons
     # Format: code : "Reason"
+    200: "OK",
     500: "Internal Server Error"
 }
 
@@ -76,7 +77,8 @@ class Response(Message):
     def __init__(self):
         """Initialize the Response"""
         super(Response, self).__init__()
-        self.code = 500
+        self.code = 500  # the status code
+        self.phrase = "" # the reason phrase
     
     def __str__(self):
         """Convert the Response to a string
@@ -84,5 +86,6 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = ""                                      
-        return super(Response, self).__str__()
+        self.startline = " ".join([self.version, self.code, self.phrase]) + "\r\n"
+        headers = "\r\n".join([header + ":" + self.get_header(header) for header in self.headerdict])
+        return self.startline + headers + "\r\n" + self.body
