@@ -32,11 +32,17 @@ class ResponseComposer:
 
         """
         if request.method == 'GET':
-            return self.compose_get_response(request)
+            response =  self.compose_get_response(request)
         else:
             response = message.Response()
             response.code = 501
-            return response
+
+        if(request.method == 'HTTP/1.1' and request.get_header("Connection") == "close"):
+            response.set_header("Connection", "keep-alive")
+        else:
+            response.set_header("Connection", "close")
+
+        return response
 
     def compose_get_response(self, request):
         response = message.Response()
