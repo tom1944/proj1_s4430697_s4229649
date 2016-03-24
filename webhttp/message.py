@@ -44,15 +44,6 @@ class Message(object):
         else:
             return ""
 
-    def __str__(self):
-        """Convert the Message to a string
-        
-        Returns:
-            str: representation the can be sent over socket
-        """
-        message = ""
-        return message
-
 
 class Request(Message):
     """Class that stores a HTTP request"""
@@ -69,8 +60,14 @@ class Request(Message):
         Returns:
             str: representation the can be sent over socket
         """
+        string = ''
         startline = " ".join([self.method, self.uri, self.version]) + "\r\n"
-        return ""
+        string += startline
+        for header in self.headerdict:
+            headerline = header + ': ' + self.headerdict[header] + '\r\n'
+            string += headerline
+        string += '\n\r' + self.body
+        return string
 
 
 class Response(Message):

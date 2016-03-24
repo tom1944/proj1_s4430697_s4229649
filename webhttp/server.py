@@ -30,7 +30,7 @@ class ConnectionHandler(threading.Thread):
         raw_http_requests = self.conn_socket.recv(1024)
         http_requests = parser.parse_requests(raw_http_requests)
 
-        print('message:', raw_http_requests)
+        print(http_requests[0])
 
         for http_request in http_requests:
             comp = composer.ResponseComposer(self.timeout)
