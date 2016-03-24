@@ -5,6 +5,7 @@ This module contains a HTTP server
 
 import socket
 import threading
+
 from webhttp import parser, composer
 
 
@@ -27,7 +28,7 @@ class ConnectionHandler(threading.Thread):
 
     def handle_connection(self):
         """Handle a new connection"""
-        raw_http_requests = self.conn_socket.recv(1024)
+        raw_http_requests = self.conn_socket.recv(8192)
         http_requests = parser.parse_requests(raw_http_requests)
 
         for http_request in http_requests:
@@ -63,11 +64,12 @@ class Server:
         """Run the HTTP Server and start listening"""
         server_socket = socket.socket()
         server_socket.bind((self.hostname, self.server_port))
-        server_socket.listen(5)
+        server_socket.listen(20)
         while not self.done:
             (client_socket, address) = server_socket.accept()
             connection = ConnectionHandler(client_socket, address, self.timeout)
             connection.run()
+        server_socket.close()
 
     def shutdown(self):
         """Safely shut down the HTTP server"""

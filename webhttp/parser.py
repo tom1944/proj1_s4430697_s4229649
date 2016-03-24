@@ -35,7 +35,6 @@ def parse_requests(buff):
 
         lines = [x for x in header.split('\r\n') if x is not '']
         startline = lines.pop(0)
-        http_request.startline = startline
         try:
             http_request.method, http_request.uri, http_request.version = startline.split()
         except ValueError:
@@ -77,4 +76,4 @@ def parse_response(buff):
         webhttp.message.Response
     """
     response = message.Response()
-    return response
+    raise NotImplementedError

@@ -10,10 +10,6 @@ from webhttp import message, resource
 from webhttp.resource import FileAccessError, FileExistError
 
 
-class NotSupportedError(Exception):
-    pass
-
-
 class ResponseComposer:
     """Class that composes a HTTP response to a HTTP request"""
 
@@ -38,7 +34,9 @@ class ResponseComposer:
         if request.method == 'GET':
             return self.compose_get_response(request)
         else:
-            raise NotSupportedError
+            response = message.Response()
+            response.code = 501
+            return response
 
     def compose_get_response(self, request):
         response = message.Response()
@@ -50,7 +48,7 @@ class ResponseComposer:
         except FileExistError:
             response.code = 404
         except FileAccessError:
-            response.code = 200
+            response.code = 403
 
         return response
 
