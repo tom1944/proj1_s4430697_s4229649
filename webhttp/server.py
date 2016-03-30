@@ -26,17 +26,18 @@ class ConnectionHandler(Thread):
         self.conn_socket = conn_socket
         self.addr = addr
         self.timeout = timeout
-        self.timer = None
+        self.timer = Timer(self.timeout, self.close)
 
     def handle_connection(self):
         """Handle a new connection"""
         raw_http_requests = self.conn_socket.recv(8192)
         http_requests = parser.parse_requests(raw_http_requests)
-
         for http_request in http_requests:
             print(http_request)
             comp = composer.ResponseComposer(self.timeout)
             response = comp.compose_response(http_request)
+            print "=== response ==="
+            print response
             self.conn_socket.send(str(response))
             if response.headerdict['Connection'] == 'close':
                 self.close()
@@ -44,17 +45,17 @@ class ConnectionHandler(Thread):
 
     def run(self):
         """Run the thread of the connection handler"""
-        self.timer = Timer(self.timeout, self.close())
         self.timer.start()
         while not self.done:
             self.handle_connection()
 
     def reset_timer(self):
         self.timer.cancel()
-        self.timer = Timer(self.timeout, self.close())
+        self.timer = Timer(self.timeout, self.close)
         self.timer.start()
 
     def close(self):
+        print "Closing persistent connenction..."
         self.done = True
         self.timer.cancel()
         self.conn_socket.close()

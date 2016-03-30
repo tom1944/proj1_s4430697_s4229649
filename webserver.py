@@ -1,4 +1,5 @@
 import argparse
+
 import webhttp.server
 
 content_dir = 'content'
@@ -9,7 +10,7 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="HTTP Server")
     parser.add_argument("-a", "--address", type=str, default='localhost')
-    parser.add_argument("-p", "--port", type=int, default=8001)
+    parser.add_argument("-p", "--port", type=int, default=8000)
     parser.add_argument("-t", "--timeout", type=int, default=15)
     args = parser.parse_args()
 
