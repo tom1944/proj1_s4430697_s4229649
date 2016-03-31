@@ -5,7 +5,6 @@ This module contains a HTTP server
 
 import socket
 from threading import Thread, Timer
-
 from webhttp import parser, composer
 
 
@@ -31,15 +30,18 @@ class ConnectionHandler(Thread):
     def handle_connection(self):
         """Handle a new connection"""
         raw_http_requests = self.conn_socket.recv(8192)
+        if self.done:
+            return
         http_requests = parser.parse_requests(raw_http_requests)
         for http_request in http_requests:
-            print(http_request)
+            print '=== request ===\n', http_request
             comp = composer.ResponseComposer(self.timeout)
             response = comp.compose_response(http_request)
-            print "=== response ==="
-            print response
+            print "=== response ===\n", response
             self.conn_socket.send(str(response))
+            print 'test'
             if response.headerdict['Connection'] == 'close':
+                print 'self.close()'
                 self.close()
         self.reset_timer()
 
@@ -47,6 +49,7 @@ class ConnectionHandler(Thread):
         """Run the thread of the connection handler"""
         self.timer.start()
         while not self.done:
+            print 'Handle connection'
             self.handle_connection()
 
     def reset_timer(self):
@@ -55,7 +58,7 @@ class ConnectionHandler(Thread):
         self.timer.start()
 
     def close(self):
-        print "Closing persistent connenction..."
+        print 'Closing persistent connenction...'
         self.done = True
         self.timer.cancel()
         self.conn_socket.close()
@@ -84,8 +87,8 @@ class Server:
         server_socket.listen(20)
         while not self.done:
             (client_socket, address) = server_socket.accept()
-            connection = ConnectionHandler(client_socket, address, self.timeout)
-            connection.run()
+            print '=== client address ===\n', address, '\n'
+            ConnectionHandler(client_socket, address, self.timeout).run()
         server_socket.close()
 
     def shutdown(self):

@@ -7,6 +7,8 @@ import os
 import mimetypes
 import urlparse
 
+    # hashlib.md5(test).hexdigest()
+
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
