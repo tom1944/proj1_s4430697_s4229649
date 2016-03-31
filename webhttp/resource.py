@@ -6,8 +6,9 @@ This module contains a handler class for resources.
 import os
 import mimetypes
 import urlparse
+import hashlib
 
-    # hashlib.md5(test).hexdigest()
+
 
 
 class FileExistError(Exception):
@@ -49,9 +50,13 @@ class Resource:
         Returns:
             str: ETag for the resource
         """
-        stat = os.stat(self.path)
-        etag = ""
+        content = self.get_content()
+        etag = hashlib.md5(content).hexdigest()
         return etag
+
+    def time_modified(self):
+        stat = os.stat(self.path)
+        return stat.st_mtime
 
     def get_content(self):
         """Get the contents of the resource
