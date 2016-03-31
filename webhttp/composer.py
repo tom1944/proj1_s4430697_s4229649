@@ -51,6 +51,8 @@ class ResponseComposer:
             response.code = 200
             resource_file = resource.Resource(request.uri)
             response.body = resource_file.get_content()
+            hash = resource_file.generate_etag()
+            response.set_header("ETag", 'W"' + hash + '"')
         except FileExistError:
             response.code = 404
         except FileAccessError:
