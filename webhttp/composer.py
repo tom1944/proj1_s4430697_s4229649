@@ -39,8 +39,8 @@ class ResponseComposer:
 
         if request.method == 'HTTP/1.1' and request.get_header("Connection") == "close":
             response.set_header("Connection", "close")
-        else:
-            response.set_header("Connection", "keep-alive")
+        # else:
+        #     response.set_header("Connection", "keep-alive")
 
         return response
 
@@ -51,13 +51,13 @@ class ResponseComposer:
             response.code = 200
             resource_file = resource.Resource(request.uri)
             response.body = resource_file.get_content()
-            hash = resource_file.generate_etag()
-            response.set_header("ETag", 'W"' + hash + '"')
+            # hash = resource_file.generate_etag()
+            # response.set_header("ETag", 'W"' + hash + '"')
+            response.set_header('Content-Length', str(resource_file.get_content_length()))
         except FileExistError:
             response.code = 404
         except FileAccessError:
             response.code = 403
-
         return response
 
     def make_date_string(self):

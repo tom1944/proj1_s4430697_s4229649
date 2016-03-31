@@ -39,10 +39,12 @@ class ConnectionHandler(Thread):
             response = comp.compose_response(http_request)
             print "=== response ===\n", response
             self.conn_socket.send(str(response))
-            print 'test'
-            if response.headerdict['Connection'] == 'close':
-                print 'self.close()'
-                self.close()
+            try:
+                if response.headerdict['Connection'] == 'close':
+                    print 'self.close()'
+                    self.close()
+            except KeyError:
+                pass
         self.reset_timer()
 
     def run(self):
@@ -61,6 +63,7 @@ class ConnectionHandler(Thread):
         print 'Closing persistent connenction...'
         self.done = True
         self.timer.cancel()
+        self.conn_socket.send('HTTP/1.1 200 OK\r\nConnection: close\r\n')
         self.conn_socket.close()
 
 
