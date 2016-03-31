@@ -9,8 +9,6 @@ import urlparse
 import hashlib
 
 
-
-
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
     pass

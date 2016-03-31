@@ -34,8 +34,7 @@ class ConnectionHandler(Thread):
         http_requests = parser.parse_requests(raw_http_requests)
         for http_request in http_requests:
             print '=== request ===\n', http_request
-            comp = composer.ResponseComposer(self.timeout)
-            response = comp.compose_response(http_request)
+            response = composer.compose_response(http_request)
             print "=== response ===\n", response
             self.conn_socket.send(str(response))
             try:
@@ -50,7 +49,7 @@ class ConnectionHandler(Thread):
         """Run the thread of the connection handler"""
         self.timer.start()
         while not self.done:
-            print 'Handle connection'
+            print '--- Handle connection ---'
             self.handle_connection()
 
     def reset_timer(self):

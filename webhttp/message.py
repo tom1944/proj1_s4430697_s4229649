@@ -98,5 +98,5 @@ class Response(Message):
             str: representation the can be sent over socket
         """
         startline = " ".join([self.version, str(self.code), reasondict[self.code]]) + "\r\n"
-        headers = [header + ": " + self.get_header(header) + '\r\n' for header in self.headerdict]
+        headers = [header + ": " + str(self[header]) + '\r\n' for header in self.headerdict]
         return startline + "".join(headers) + "\r\n" + self.body
