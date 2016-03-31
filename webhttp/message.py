@@ -22,7 +22,18 @@ class Message(object):
         self.version = "HTTP/1.1"
         self.body = ""
         self.headerdict = dict()
-        
+
+    def __getitem__(self, name):
+        """Alternative method to get header"""
+        if name in self.headerdict:
+            return self.headerdict[name]
+        else:
+            return ''
+
+    def __setitem__(self, name, value):
+        """Alternative method to set header"""
+        self.headerdict[name] = value
+
     def set_header(self, name, value):
         """Add a header and its value
         
@@ -44,7 +55,7 @@ class Message(object):
         if name in self.headerdict:
             return self.headerdict[name]
         else:
-            return ""
+            return ''
 
 
 class Request(Message):

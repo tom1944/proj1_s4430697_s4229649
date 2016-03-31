@@ -37,10 +37,8 @@ class ResponseComposer:
             response = message.Response()
             response.code = 501
 
-        if request.method == 'HTTP/1.1' and request.get_header("Connection") == "close":
-            response.set_header("Connection", "close")
-        # else:
-        #     response.set_header("Connection", "keep-alive")
+        if request.method == 'HTTP/1.1' and request['Connection'] == 'close':
+            response['Connection'] = 'close'
 
         return response
 
@@ -53,7 +51,7 @@ class ResponseComposer:
             response.body = resource_file.get_content()
             # hash = resource_file.generate_etag()
             # response.set_header("ETag", 'W"' + hash + '"')
-            response.set_header('Content-Length', str(resource_file.get_content_length()))
+            response['Content-Length'] = str(resource_file.get_content_length())
         except FileExistError:
             response.code = 404
         except FileAccessError:

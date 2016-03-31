@@ -11,7 +11,7 @@ from webhttp import parser, composer
 class ConnectionHandler(Thread):
     """Connection Handler for HTTP Server"""
 
-    def __init__(self, conn_socket, addr, timeout):
+    def __init__(self, conn_socket, timeout):
         """Initialize the HTTP Connection Handler
 
         Args:
@@ -21,9 +21,8 @@ class ConnectionHandler(Thread):
         """
         super(ConnectionHandler, self).__init__()
         self.done = False
-        self.daemon = True
+        # self.daemon = True
         self.conn_socket = conn_socket
-        self.addr = addr
         self.timeout = timeout
         self.timer = Timer(self.timeout, self.close)
 
@@ -40,7 +39,7 @@ class ConnectionHandler(Thread):
             print "=== response ===\n", response
             self.conn_socket.send(str(response))
             try:
-                if response.headerdict['Connection'] == 'close':
+                if response['Connection'] == 'close':
                     print 'self.close()'
                     self.close()
             except KeyError:
@@ -63,7 +62,6 @@ class ConnectionHandler(Thread):
         print 'Closing persistent connenction...'
         self.done = True
         self.timer.cancel()
-        self.conn_socket.send('HTTP/1.1 200 OK\r\nConnection: close\r\n')
         self.conn_socket.close()
 
 
@@ -91,7 +89,7 @@ class Server:
         while not self.done:
             (client_socket, address) = server_socket.accept()
             print '=== client address ===\n', address, '\n'
-            ConnectionHandler(client_socket, address, self.timeout).run()
+            ConnectionHandler(client_socket, self.timeout).run()
         server_socket.close()
 
     def shutdown(self):
