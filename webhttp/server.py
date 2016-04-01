@@ -5,6 +5,7 @@ This module contains a HTTP server
 
 import socket
 from threading import Thread, Timer
+
 from webhttp import parser, composer
 
 
@@ -88,7 +89,7 @@ class Server:
         while not self.done:
             (client_socket, address) = server_socket.accept()
             print '=== client address ===\n', address, '\n'
-            ConnectionHandler(client_socket, self.timeout).run()
+            ConnectionHandler(client_socket, self.timeout).start()
         server_socket.close()
 
     def shutdown(self):
