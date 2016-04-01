@@ -90,6 +90,7 @@ class Response(Message):
         """Initialize the Response"""
         super(Response, self).__init__()
         self.code = 500  # the status code
+        self.phrase = ''  # the response phrase
     
     def __str__(self):
         """Convert the Response to a string
@@ -97,6 +98,7 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        startline = " ".join([self.version, str(self.code), reasondict[self.code]]) + "\r\n"
+        phrase = reasondict[self.code] if self.phrase == '' else self.phrase
+        startline = " ".join([self.version, str(self.code), phrase]) + "\r\n"
         headers = [header + ": " + str(self[header]) + '\r\n' for header in self.headerdict]
         return startline + "".join(headers) + "\r\n" + self.body
