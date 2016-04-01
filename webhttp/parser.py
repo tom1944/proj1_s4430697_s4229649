@@ -76,4 +76,25 @@ def parse_response(buff):
         webhttp.message.Response
     """
     response = message.Response()
-    raise NotImplementedError
+
+    try:
+        header, body = response.split('\r\n\r\n', 1)
+        response.body = body
+    except ValueError:
+        raise MessageFormatError
+
+    lines = [x for x in header.split('\r\n') if x is not '']
+    startline = lines.pop(0)
+    try:
+        response.version, response.code, response.phrase = startline.split()
+    except ValueError:
+        raise MessageFormatError
+
+    for line in lines:
+        try:
+            name, value = line.split(':', 1)
+            response.set_header(name, value)
+        except ValueError:
+            raise MessageFormatError
+
+    return response
