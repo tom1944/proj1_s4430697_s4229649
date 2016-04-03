@@ -86,7 +86,8 @@ def parse_response(buff):
     lines = [x for x in header.split('\r\n') if x is not '']
     startline = lines.pop(0)
     try:
-        response.version, response.code, response.phrase = startline.split()
+        response.version, code, response.phrase = startline.split()
+        response.code = int(code)
     except ValueError:
         raise MessageFormatError
 
