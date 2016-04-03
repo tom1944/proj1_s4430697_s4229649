@@ -78,7 +78,7 @@ def parse_response(buff):
     response = message.Response()
 
     try:
-        header, body = response.split('\r\n\r\n', 1)
+        header, body = buff.split('\r\n\r\n', 1)
         response.body = body
     except ValueError:
         raise MessageFormatError
