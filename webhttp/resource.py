@@ -3,10 +3,10 @@
 This module contains a handler class for resources.
 """
 
-import os
-import mimetypes
-import urlparse
 import hashlib
+import mimetypes
+import os
+import urlparse
 
 
 class FileExistError(Exception):
@@ -91,4 +91,7 @@ class Resource:
         Returns:
             int: length of resource in bytes
         """
-        return os.path.getsize(self.path)
+        with open(self.path) as content_file:
+            content = content_file.read()
+            content_file.close()
+        return len(content) # os.path.getsize(self.path)
