@@ -23,7 +23,7 @@ def compose_response(request):
     response = message.Response()
     response.version = 'HTTP/1.1'
     response.body = ''
-    # response['Content-Length'] = 0
+    response['Content-Length'] = 0
 
     if request.method == 'GET':
         response = compose_get_response(request, response)
@@ -31,10 +31,10 @@ def compose_response(request):
         response = message.Response()
         response.code = 501
 
-    if request.method == 'HTTP/1.1' and request.get_header('Connection') == 'close':
-        response.set_header('Connection', 'close')
+    if request.method == 'HTTP/1.1' and request['Connection'] == 'close':
+        response['Connection'] = 'close'
     else:
-        response.set_header('Connection', 'keep-alive')
+        response['Connection'] = 'keep-alive'
 
     return response
 
@@ -46,7 +46,7 @@ def compose_get_response(request, response):
         response.body = resource_file.get_content()
         # hash = resource_file.generate_etag()
         # response.set_header("ETag", 'W"' + hash + '"')
-        response.set_header('Content-Length', resource_file.get_content_length())
+        response['Content-Length'] = resource_file.get_content_length()
     except FileExistError:
         response.code = 404
     except FileAccessError:
