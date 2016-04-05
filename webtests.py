@@ -59,14 +59,47 @@ class TestGetRequests(unittest.TestCase):
     def test_nonexistant_file(self):
         """GET for a single resource that does not exist"""
         print "test_nonexistant_file"
-        pass
+        request = message.Request()
+        # Send the request
+        request.method = "GET"
+        request.uri = "/test/doesNotExist.html"
+        request.set_header("Host", server_ip + ":{}".format(server_portnr))
+        request.set_header("Connection", "close")
+
+        # Test response
+        msg = self.client_socket.recv(1024)
+        print "msg: <" + str(msg) + ">"
+        response = parser.parse_response(msg)
+        self.assertEqual(response.code, 404)
+        print "response: <" + str(response) + ">"
+        self.assertFalse(response.body)
 
     def test_caching(self):
         """GET for an existing single resource followed by a GET for that same
         resource with caching utilized on the client/tester side
         """
         print "test_caching"
-        pass
+        # Send the request
+        request = message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", server_ip + ":{}".format(server_portnr))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # send again with etag
+        msg = self.client_socket.recv(1024)
+        response = parser.parse_response(msg)
+        request["ETag"] = response["ETag"]
+        self.client_socket.send(request)
+
+        # Test response
+        msg = self.client_socket.recv(1024)
+        print "msg: <" + str(msg) + ">"
+        response = parser.parse_response(msg)
+        self.assertEqual(response.code, 304)
+        print "response: <" + str(response) + ">"
+        self.assertFalse(response.body)
 
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
