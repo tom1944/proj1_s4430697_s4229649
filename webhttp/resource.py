@@ -94,4 +94,4 @@ class Resource:
         with open(self.path) as content_file:
             content = content_file.read()
             content_file.close()
-        return len(content) # os.path.getsize(self.path)
+        return len(content)  # os.path.getsize(self.path)
