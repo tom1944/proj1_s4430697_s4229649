@@ -61,12 +61,10 @@ class ConnectionHandler(Thread):
     def run(self):
         """Run the thread of the connection handler"""
         while not self.done:
-            print '--- Handle connection ---'
             self.handle_connection()
 
     def close(self):
         """Close the connection"""
-        print 'Closing persistent connenction...'
         self.done = True
         self.conn_socket.shutdown(socket.SHUT_RDWR)
         self.conn_socket.close()

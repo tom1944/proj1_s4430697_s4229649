@@ -7,6 +7,7 @@ import hashlib
 import mimetypes
 import os
 import urlparse
+import zlib
 
 
 class FileExistError(Exception):
@@ -66,6 +67,17 @@ class Resource:
             content = content_file.read()
             content_file.close()
         return content
+
+    def get_content_gzip(self):
+        """Get the contents of the resource
+
+        Returns:
+            str: Contents of the resource
+        """
+        with open(self.path) as content_file:
+            content = content_file.read()
+            content_file.close()
+        return str(zlib.compress(content, 9))
 
     def get_content_type(self):
         """Get the content type, i.e "text/html"

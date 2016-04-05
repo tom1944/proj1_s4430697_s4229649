@@ -99,3 +99,9 @@ def parse_response(buff):
             raise MessageFormatError
 
     return response
+
+
+def parse_header(request, name):
+    header = request[name]
+    split_header = [encoding.strip() for encoding in header.split(',')]
+    return split_header

@@ -57,6 +57,9 @@ class Message(object):
         else:
             return ''
 
+    def remove_header(self, name):
+        self.headerdict.pop(name)
+
 
 class Request(Message):
     """Class that stores a HTTP request"""
@@ -101,4 +104,4 @@ class Response(Message):
         phrase = reasondict[self.code] if self.phrase == '' else self.phrase
         startline = " ".join([self.version, str(self.code), phrase]) + "\r\n"
         headers = [header + ": " + str(self[header]) + '\r\n' for header in self.headerdict]
-        return startline + "".join(headers) + "\r\n" + self.body
+        return bytes(startline + "".join(headers) + "\r\n" + self.body)
