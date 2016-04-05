@@ -41,8 +41,8 @@ def compose_get_response(request, response):
         response.code = 200
         resource_file = resource.Resource(request.uri)
         response.body = resource_file.get_content()
-        hash = resource_file.generate_etag()
-        response['ETag'] = 'W"' + hash + '"'
+        etag = resource_file.generate_etag()
+        response['ETag'] = str(etag)
         response['Content-Length'] = resource_file.get_content_length()
         response['Date'] = make_date_string()
     except FileExistError:
