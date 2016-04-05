@@ -75,14 +75,14 @@ class Resource:
         Returns:
             str: Contents of the resource
         """
-        with open(self.path) as content_file, gzip.open(self.path + 'temp', 'wb') as temp_file:
+        with open(self.path) as content_file, gzip.open('gzip_temp', 'wb') as temp_file:
             shutil.copyfileobj(content_file, temp_file)
             content_file.close()
             temp_file.close()
-        with open(self.path + 'temp') as temp_file:
+        with open('gzip_temp') as temp_file:
             content = temp_file.read()
             temp_file.close()
-            os.remove(self.path + 'temp')
+            os.remove('gzip_temp')
         return content
         # return zlib.compress(self.get_content())
 
