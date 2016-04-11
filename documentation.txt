@@ -38,7 +38,6 @@ The content directory is the directory that GET requests get their content from.
 project and should be executed as following:
 python webserver.py [−a ADDRESS] [−p PORT] [− t TIMEOUT]
 
-
 1.1 Libraries Used
 This project is written in Python 2, but should be easily portable to Python 3; only things like print statements should
 be changed for that. The most important library used is the socket library. This library handles the transport
