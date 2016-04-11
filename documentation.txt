@@ -9,28 +9,36 @@ This project implements a simple HTTP server that is able to process GET request
 persistent connections, does cache handling and is able to encode data using gzip. To achieve 
 these goals, we used python.
 
+To syntax for running the server is as following:
+python webserver.py [−a ADDRESS] [−p PORT] [− t TIMEOUT]
+
 
 Table of Contents
-
+1     Structure
+1.1   Libraries Used
+2     Control Flow
+2.1   Get Requests
+2.2   Persistent Connections
+2.3   ETags
+2.4   Encoding
+3     Difficulties
 
 1. Structure
 
-python webserver.py [−a ADDRESS] [−p PORT] [− t TIMEOUT]
-
-1.1 libraries used
+1.1 Libraries Used
 This project is written in Python 2, but should be easily portable to Python 3; only things like print statements should
 be changed for that. The most important library used is the socket library. This library handles the transport
 layer (TCP) so we could focus on the application layer (HTTP). For compressing the data we used the gzip library in
 combination with shutil. The md5 method from hashlib was isued to generate the ETags.. Other external libraries that where
 used are time, mimetypes, urlparse, and argparse.
 
-2 Control flow
+2 Control Flow
 The execution of the program starts in webserver.py. The options from the command line are passed to a server object.
 The server object will start listening for incoming connections. When a connection comes in, it creates a new
 ConnectionHandler thread and passes the connection socket. The ConnectionHandler will receive data from the socket,
 let the parser parse it and pass the parsed message to the composer.
 
-2.1 GET requests
+2.1 GET Requests
 When a client tries to connect to the server, the first thing the server does is accepting the connection. This returns
 a client socket which the server can send packages to. After the connection is accepted the server creates a thread that
 waits for data from the client. When the server receives data this data is parsed and a response if composed. If this
@@ -40,7 +48,7 @@ identified as a GET request the composer tries to compose a response with code 2
 file either code 403 (Forbidden) or code 404 (Not Found) is send to the client without any headers, corresponding to
 the situation.
 
-2.2 Persistent connections
+2.2 Persistent Connections
 This HTTP server supports the use of persistent connections. If the client does not send a connection header with
 the 'close' token, the server will asume that the client wishes to maintain a persistent connection. The responses will contain the 'keep-alive'
 connection header. The server will close the connection if the client sends a connection header with the 'close' token or if the connection times out.
