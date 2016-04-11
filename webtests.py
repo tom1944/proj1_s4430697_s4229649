@@ -1,10 +1,14 @@
+import gzip
+import os
+import shutil
 import socket
 import sys
+import time
 import unittest
 
 from webhttp import message, parser
 
-server_portnr = 8003
+server_portnr = 8010
 server_ip = "localhost"
 #server_ip = "192.168.0.17"
 
@@ -44,8 +48,8 @@ class TestGetRequests(unittest.TestCase):
         request = message.Request()
         request.method = "GET"
         request.uri = "/test/index.html"
-        request.set_header("Host", server_ip + ":{}".format(server_portnr))
-        request.set_header("Connection", "close")
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "close"
         self.client_socket.send(str(request))
 
         # Test response
@@ -63,8 +67,8 @@ class TestGetRequests(unittest.TestCase):
         # Send the request
         request.method = "GET"
         request.uri = "/test/doesNotExist.html"
-        request.set_header("Host", server_ip + ":{}".format(server_portnr))
-        request.set_header("Connection", "close")
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "close"
 
         # Test response
         msg = self.client_socket.recv(1024)
@@ -83,15 +87,17 @@ class TestGetRequests(unittest.TestCase):
         request = message.Request()
         request.method = "GET"
         request.uri = "/test/index.html"
-        request.set_header("Host", server_ip + ":{}".format(server_portnr))
-        request.set_header("Connection", "close")
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "keep-alive"
         self.client_socket.send(str(request))
 
         # send again with etag
         msg = self.client_socket.recv(1024)
         response = parser.parse_response(msg)
+        self.assertTrue(response["ETag"])
         request["ETag"] = response["ETag"]
-        self.client_socket.send(request)
+        request["Connection"] = "close"
+        self.client_socket.send(str(request))
 
         # Test response
         msg = self.client_socket.recv(1024)
@@ -104,19 +110,64 @@ class TestGetRequests(unittest.TestCase):
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
         print "test_extisting_index_file"
-        pass
+        # Send the request
+        request = message.Request()
+        request.method = "GET"
+        request.uri = "/"
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "close"
+        self.client_socket.send(str(request))
+
+        # Test response
+        msg = self.client_socket.recv(1024)
+        print "msg: <" + str(msg) + ">"
+        response = parser.parse_response(msg)
+        self.assertEqual(response.code, 200)
+        print "response: <" + str(response) + ">"
+        self.assertTrue(response.body)
 
     def test_nonexistant_index_file(self):
         """GET for a directory with a non-existant index.html file"""
         print "test_nonexistant_index_file"
-        pass
+        request = message.Request()
+        # Send the request
+        request.method = "GET"
+        request.uri = "/empty"
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "close"
+        self.client_socket.send(str(request))
+
+        # Test response
+        msg = self.client_socket.recv(1024)
+        print "msg: <" + str(msg) + ">"
+        response = parser.parse_response(msg)
+        self.assertEqual(response.code, 404)
+        print "response: <" + str(response) + ">"
+        self.assertFalse(response.body)
 
     def test_persistent_close(self):
         """Multiple GETs over the same (persistent) connection with the last
         GET prompting closing the connection, the connection should be closed.
         """
         print "test_persistent_close"
-        pass
+        request = message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "keep-alive"
+
+        for i in range(0,2):
+            self.client_socket.send(str(request))
+            msg = self.client_socket.recv(1024)
+
+        request["Connection"] = "close"
+        self.client_socket.send(str(request))
+        msg = self.client_socket.recv(1024)
+
+        time.sleep(1) # wait untill all data has been received
+
+        self.assertRaises(socket.error, lambda: self.client_socket.send("something"))
+
 
     def test_persistent_timeout(self):
         """Multiple GETs over the same (persistent) connection, followed by a
@@ -124,14 +175,50 @@ class TestGetRequests(unittest.TestCase):
         closed.
         """
         print "test_persistent_timeout"
-        pass
+        request = message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "keep-alive"
+
+        for i in range(0,2):
+            self.client_socket.send(str(request))
+            msg = self.client_socket.recv(1024)
+
+        self.client_socket.send(str(request))
+        msg = self.client_socket.recv(1024)
+
+        time.sleep(16)
+        self.assertRaises(socket.error, lambda :self.client_socket.send("something"))
 
     def test_encoding(self):
         """GET which requests an existing resource using gzip encodign, which
         is accepted by the server.
         """
         print "test_encoding"
-        pass
+        request = message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request["Host"] = server_ip + ":{}".format(server_portnr)
+        request["Connection"] = "keep-alive"
+        request["Content-Encoding"] = "gzip"
+        self.client_socket.send(str(request))
+
+        msg = self.client_socket.recv(1024)
+        response = parser.parse_response(msg)
+        self.assertEqual(request["Content-Encoding"], "gzip")
+
+        with open("/test/index.html") as content_file, gzip.open('gzip_temp', 'wb') as temp_file:
+            shutil.copyfileobj(content_file, temp_file)
+            content_file.close()
+            temp_file.close()
+        with open('gzip_temp') as temp_file:
+            zipped_file = temp_file.read()
+            temp_file.close()
+            os.remove('gzip_temp')
+
+        self.assertEqual(zipped_file, response.body)
+
 
 
 if __name__ == "__main__":

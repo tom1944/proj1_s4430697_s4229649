@@ -53,7 +53,7 @@ class ConnectionHandler(Thread):
             print "=== response ===\n", response
             self.conn_socket.send(str(response))
             try:
-                if response.get_header('Connection') == 'close':
+                if response['Connection'] == 'close':
                     self.close()
             except KeyError:
                 pass
