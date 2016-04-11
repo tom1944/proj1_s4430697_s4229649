@@ -8,7 +8,7 @@ import unittest
 
 from webhttp import message, parser
 
-server_portnr = 8010
+server_portnr = 8001
 server_ip = "localhost"
 #server_ip = "192.168.0.17"
 
@@ -220,7 +220,6 @@ class TestGetRequests(unittest.TestCase):
             os.remove('gzip_temp')
 
         self.assertEqual(zipped_file, response.body)
-
 
 
 if __name__ == "__main__":

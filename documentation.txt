@@ -65,9 +65,10 @@ the situation.
 
 2.2 Persistent Connections
 This HTTP server supports the use of persistent connections. If the client does not send a connection header with
-the 'close' token, the server will assume that the client wishes to maintain a persistent connection. The responses will contain the 'keep-alive'
-connection header. The server will close the connection if the client sends a connection header with the 'close' token or if the connection times out.
-The default timeout is 15 seconds and is configurable using the option -t.
+the 'close' token, the server will assume that the client wishes to maintain a persistent connection. The responses
+will contain the 'keep-alive' connection header. The server will close the connection if the client sends a connection
+header with the 'close' token or if the connection times out. The default timeout is 15 seconds and is configurable
+using the option -t.
 
 2.3 ETags
 The use of ETags is supported by the server. When a client sends a GET request, the server will put an ETag in the response.
