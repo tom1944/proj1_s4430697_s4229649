@@ -1,11 +1,6 @@
-Don't forget to document your implementation:
--> language + external libraries used (if any)
--> control flow with headers/status codes considered for each requirement (GET, persistent connections, ETag, encoding)
--> concurrency, hashing, resource encoding
--> challenges (if any)
 
 
-This project implements a simple HTTP server that is able to process GET requests, handle 
+This project implements a simple HTTP server that is able to process GET requests, handle
 persistent connections, does cache handling and is able to encode data using gzip. To achieve 
 these goals, we used python.
 
@@ -70,7 +65,7 @@ the situation.
 
 2.2 Persistent Connections
 This HTTP server supports the use of persistent connections. If the client does not send a connection header with
-the 'close' token, the server will asume that the client wishes to maintain a persistent connection. The responses will contain the 'keep-alive'
+the 'close' token, the server will assume that the client wishes to maintain a persistent connection. The responses will contain the 'keep-alive'
 connection header. The server will close the connection if the client sends a connection header with the 'close' token or if the connection times out.
 The default timeout is 15 seconds and is configurable using the option -t.
 
