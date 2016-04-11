@@ -18,11 +18,11 @@ Table of Contents
 python webserver.py [−a ADDRESS] [−p PORT] [− t TIMEOUT]
 
 1.1 libraries used
-This project is written in Python 2, but should be easily portable to Python 3; only things 
-like print statements should be changed for that. The most important library used is the socket 
-library. This library handles the transport layer (TCP) so we could focus on the application layer (HTTP).
-For compressing the data we used the gzip library in combination with shutil. The md5 method from hashlib was isued to generate the ETags.
-Other external libraries that where used are time, mimetypes, urlparse, and argparse.
+This project is written in Python 2, but should be easily portable to Python 3; only things like print statements should
+be changed for that. The most important library used is the socket library. This library handles the transport
+layer (TCP) so we could focus on the application layer (HTTP). For compressing the data we used the gzip library in
+combination with shutil. The md5 method from hashlib was isued to generate the ETags.. Other external libraries that where
+used are time, mimetypes, urlparse, and argparse.
 
 2 Control flow
 The execution of the program starts in webserver.py. The options from the command line are passed to a server object.
@@ -31,7 +31,14 @@ ConnectionHandler thread and passes the connection socket. The ConnectionHandler
 let the parser parse it and pass the parsed message to the composer.
 
 2.1 GET requests
-When a client tries to connect to the server, the first thing the server does is accepting the connection. This returns a client socket which the server can send packages to. After the connection is accepted the server creates a thread that waits for data from the client. When the server receives data this data is parsed and a response if composed. If this data is not identified as a GET request the composer creates response with code 501 (Not Implemented). When it is identified as a GET request the composer tries to compose a response with code 200 (OK) containing the data of the requested file as the body. If something goes wrong during the reading of the requested file either code 403 (Forbidden) or code 404 (Not Found) is send to the client without any headers, corresponding to the situation.
+When a client tries to connect to the server, the first thing the server does is accepting the connection. This returns
+a client socket which the server can send packages to. After the connection is accepted the server creates a thread that
+waits for data from the client. When the server receives data this data is parsed and a response if composed. If this
+data is not identified as a GET request the composer creates response with code 501 (Not Implemented). When it is
+identified as a GET request the composer tries to compose a response with code 200 (OK) containing some headers (see 2.2,
+2.3 and 2.4), and the data of the requested file as the body. If something goes wrong during the reading of the requested
+file either code 403 (Forbidden) or code 404 (Not Found) is send to the client without any headers, corresponding to
+the situation.
 
 2.2 Persistent connections
 This HTTP server supports the use of persistent connections. If the client does not send a connection header with
@@ -44,7 +51,8 @@ The use of ETags is supported by the server. When a client sends a GET request, 
 When the client sends a GET request with the same ETag, the server will reply with an 'HTTP/1.1 304 Not Modified' message.
 
 2.4 Encoding
-If the request contains the 'Accept-Encoding' header and this headers value contains 'gzip', the content of the requested file is encoded in gzip format before it is added to the response.
+If the request contains the 'Accept-Encoding' header and this headers value contains 'gzip', the content of the
+requested file is encoded in gzip format before it is added to the response.
 
 
 3 Difficulties

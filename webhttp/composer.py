@@ -28,10 +28,11 @@ def compose_response(request):
         response.code = 501
 
     if response.code == 200:
-        if request.method == 'HTTP/1.1' and request['Connection'] == 'close':
-            response['Connection'] = 'close'
-        else:
-            response['Connection'] = 'keep-alive'
+        if request.method == 'HTTP/1.1':
+            if request['Connection'] == 'close':
+                response['Connection'] = 'close'
+            else:
+                response['Connection'] = 'keep-alive'
 
     return response
 
