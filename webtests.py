@@ -14,7 +14,9 @@ server_ip = "localhost"
 
 
 class TestGetRequests(unittest.TestCase):
-    """Test cases for GET requests"""
+    """Test cases for GET requests
+    None of these tests did succeed on our computer. We do not know what is going wrong.
+    When we do these tests with a browser and listen with wireshark, everything seems fine."""
     @classmethod
     def setUpClass(cls):
         pass

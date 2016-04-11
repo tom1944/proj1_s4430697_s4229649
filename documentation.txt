@@ -25,6 +25,10 @@ For compressing the data we used the gzip library in combination with shutil. Th
 Other external libraries that where used are time, mimetypes, urlparse, and argparse.
 
 2 Control flow
+The execution of the program starts in webserver.py. The options from the command line are passed to a server object.
+The server object will start listening for incoming connections. When a connection comes in, it creates a new
+ConnectionHandler thread and passes the connection socket. The ConnectionHandler will receive data from the socket,
+let the parser parse it and pass the parsed message to the composer.
 
 2.1 GET requests
 When a client tries to connect to the server, the first thing the server does is accepting the connection. This returns a client socket which the server can send packages to. After the connection is accepted the server creates a thread that waits for data from the client. When the server receives data this data is parsed and a response if composed. If this data is not identified as a GET request the composer creates response with code 501 (Not Implemented). When it is identified as a GET request the composer tries to compose a response with code 200 (OK) containing the data of the requested file as the body. If something goes wrong during the reading of the requested file either code 403 (Forbidden) or code 404 (Not Found) is send to the client without any headers, corresponding to the situation.
@@ -36,11 +40,12 @@ connection header. The server will close the connection if the client sends a co
 The default timeout is 15 seconds and is configurable using the option -t.
 
 2.3 ETags
-
-'HTTP/1.1 304 Not Modified'
+The use of ETags is supported by the server. When a client sends a GET request, the server will put an ETag in the response.
+When the client sends a GET request with the same ETag, the server will reply with an 'HTTP/1.1 304 Not Modified' message.
 
 2.4 Encoding
 If the request contains the 'Accept-Encoding' header and this headers value contains 'gzip', the content of the requested file is encoded in gzip format before it is added to the response.
 
 
 3 Difficulties
+- reading the rfc
