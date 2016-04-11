@@ -102,6 +102,17 @@ def parse_response(buff):
 
 
 def parse_header(request, name):
+    """Parse the content of a header if it consists of multiple strings
+    separated between comma's
+
+    Args:
+        request (webhttp.Request): request from client
+        name: the name of the header field to be parsed
+
+    Returns:
+        a list of the header values
+
+    """
     header = request[name]
     split_header = [encoding.strip() for encoding in header.split(',')]
     return split_header
